@@ -1,6 +1,5 @@
 package com.example.practicaltest;
 
-import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
@@ -14,12 +13,12 @@ public class MyAdapter extends RecyclerView.Adapter {
 
     List<Record> mRecords = new ArrayList<>();
 
-    Activity activity;
-    public MyAdapter(Data myData, Activity myActivity) {
+
+    public MyAdapter(Data myData) {
 
         this.mRecords=myData.getRecords();
 
-        this.activity=myActivity;
+
     }
 
     @Override
