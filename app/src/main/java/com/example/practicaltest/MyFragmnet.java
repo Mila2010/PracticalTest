@@ -1,7 +1,10 @@
 package com.example.practicaltest;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +31,8 @@ public class MyFragmnet extends Fragment {
 
     Retrofit mRetrofit;
 
+    RecyclerView mRecyclerView;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -51,9 +56,6 @@ public class MyFragmnet extends Fragment {
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
 
-
-
-
                     try {
                         ResponseBody responseBody = response.body();
 
@@ -67,6 +69,8 @@ public class MyFragmnet extends Fragment {
 
                         List<Record> records = data.getRecords();
                         Log.d(TAG,Integer.toString(records.size()));
+
+                        initRecyclerV(view, data,getActivity());
 
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -91,4 +95,10 @@ public class MyFragmnet extends Fragment {
         });
 
     }
+
+    public void initRecyclerV(View view,Data myData, Activity myActivity ){
+
+        mRecyclerView=(RecyclerView) view.findViewById(R.id.recview);
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(),2));
+        mRecyclerView.setAdapter(new MyAdapter(myData, myActivity));}
 }
