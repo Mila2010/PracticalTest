@@ -1,6 +1,7 @@
 package com.example.practicaltest;
 
 import android.app.Fragment;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,15 +12,14 @@ import android.view.ViewGroup;
 
 import com.google.gson.Gson;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.List;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by Millochka on 12/10/16.
@@ -27,6 +27,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MyFragmnet extends Fragment {
 
     public final String TAG="com.example.MyFragment";
+
+    View mView;
 
     Retrofit mRetrofit;
 
@@ -47,57 +49,87 @@ public class MyFragmnet extends Fragment {
     @Override
     public void onViewCreated(final View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mRetrofit = new Retrofit.Builder().baseUrl("https://vine.co/api/timelines/users/").addConverterFactory(GsonConverterFactory.create()).build();
-        ApiService apiService= mRetrofit.create(ApiService.class);
-        Call<ResponseBody> call = apiService.fetchResponse();
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
+        mView = view;
+        DownloadFilesTask runner = new DownloadFilesTask();
 
-                    try {
-                        ResponseBody responseBody = response.body();
-
-                        String input = responseBody.string();
-
-                        Gson gson = new Gson();
-
-                        Model model = gson.fromJson(input, Model.class);
-
-                        Data data = model.getData();
-
-                        List<Record> records = data.getRecords();
-                        Log.d(TAG,Integer.toString(records.size()));
-
-                        initRecyclerV(view, data);
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+        runner.execute();
 
 
 
 
-//
-
-
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-
-                Log.d(TAG,"Failed");
-
-            }
-        });
 
     }
 
-    public void initRecyclerV(View view,Data myData){
+    public void initRecyclerV(Data myData){
 
-        mRecyclerView=(RecyclerView) view.findViewById(R.id.recview);
+        mRecyclerView=(RecyclerView) mView.findViewById(R.id.recview);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(new MyAdapter(myData));}
+
+    public String getStringFromUrl(){
+
+    StringBuilder content = new StringBuilder();
+
+    try
+    {
+        URL url = null;
+        try {
+            url = new URL("https://vine.co/api/timelines/users/918753190470619136" );
+
+        } catch (MalformedURLException e1) {
+            e1.printStackTrace();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+
+        URLConnection urlConnection = url.openConnection();
+
+
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+
+        String line;
+
+        while ((line = bufferedReader.readLine()) != null)
+        {
+            content.append(line + "\n");
+        }
+        bufferedReader.close();
+    }
+    catch(Exception e)
+    {
+        e.printStackTrace();
+    }
+    return content.toString();}
+
+
+    protected class DownloadFilesTask extends AsyncTask<URL, View, String> {
+
+
+
+        @Override
+        protected String doInBackground(URL... urls) {
+
+            String result = getStringFromUrl();
+
+            Log.d(TAG,"Failed");
+
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String result){
+
+            Gson gson = new Gson();
+
+            Model model = gson.fromJson(result, Model.class);
+
+            Data data = model.getData();
+
+            initRecyclerV(data);
+
+        }
+    }
 }
+
+
