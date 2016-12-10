@@ -8,7 +8,7 @@ import java.util.List;
 
 public class Data {
 
-    private Integer count;
+    private Long count;
 
     private String anchorStr;
 
@@ -18,13 +18,13 @@ public class Data {
 
     private String backAnchor;
 
-    private Integer anchor;
+    private Long anchor;
 
     private Integer nextPage;
 
     private Integer size;
 
-    public Integer getCount() {
+    public Long getCount() {
         return count;
     }
 
@@ -44,7 +44,7 @@ public class Data {
         return backAnchor;
     }
 
-    public Integer getAnchor() {
+    public Long getAnchor() {
         return anchor;
     }
 

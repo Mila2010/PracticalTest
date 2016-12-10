@@ -7,7 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.gson.Gson;
+
 import java.io.IOException;
+import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -48,15 +51,31 @@ public class MyFragmnet extends Fragment {
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
 
-//                    Model model=new Model();
-//                    model =
+
+
 
                     try {
                         ResponseBody responseBody = response.body();
-                        Log.d(TAG,responseBody.string());
+
+                        String input = responseBody.string();
+
+                        Gson gson = new Gson();
+
+                        Model model = gson.fromJson(input, Model.class);
+
+                        Data data = model.getData();
+
+                        List<Record> records = data.getRecords();
+                        Log.d(TAG,Integer.toString(records.size()));
+
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+
+
+
+
+//
 
 
 

@@ -14,7 +14,7 @@ public class Record {
 
     private Integer remixDisabled;
 
-    private Integer userId;
+    private Long userId;
 
     private String username;
 
@@ -39,7 +39,7 @@ public class Record {
         return remixDisabled;
     }
 
-    public Integer getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
